@@ -6,7 +6,10 @@ import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 Enzyme.configure({ adapter: new Adapter() });
 
 const setup = (props = {}, state = null) => {
-  return shallow(<App {...props} />);
+  // return shallow(<App {...props} />);
+  const wrapper = shallow(<App {...props} />);
+  if (state) wrapper.setState(state);
+  return wrapper;
 };
 
 const findByTestAttr = (wrapper, val) => {
@@ -40,4 +43,15 @@ test("counter starts at 0", () => {
   expect(initialCounterState).toBe(0);
 });
 
-test("clicking button increments counter display", () => {});
+test("clicking button increments counter display", () => {
+  const counter = 11;
+  const wrapper = setup(null, { counter });
+
+  // find button and click
+  const button = findByTestAttr(wrapper, "increment-button");
+  button.simulate("click");
+
+  // find display and test value
+  const counterDisplay = findByTestAttr(wrapper, "counter-display");
+  expect(counterDisplay.text()).toContain(JSON.stringify(counter + 1));
+});
